@@ -63,14 +63,20 @@ typedef struct _response {
 	return_code_t code;
 } response_t;
 
-return_code_t create(char* table_name, list_t columns_declaration);
+typedef struct _database {
+	list_t tables;
+} database_t;
 
-return_code_t drop(char* table_name);
+database_t db_ctor();
 
-return_code_t insert(char* table_name, list_t column_values);
+return_code_t create(database_t * DB,char* table_name, list_t columns_declaration);
 
-return_code_t delete(char* table_name, list_t conditions);
+return_code_t drop(database_t * DB,char* table_name);
 
-list_t select(list_t columns_names, char* from, list_t conditions);
+return_code_t insert(database_t * DB,char* table_name, list_t column_values);
 
-response_t exec_query(char* query);
+return_code_t delete(database_t * DB,char* table_name, list_t conditions);
+
+list_t select(database_t * DB,list_t columns_names, char* from, list_t conditions);
+
+response_t exec_query(database_t * DB,char* query);

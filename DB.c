@@ -1,31 +1,36 @@
 #include "DB.h"
 
-return_code_t create(char* table_name, list_t columns_declaration)
+database_t db_ctor()
+{
+	return database_t;
+}
+
+return_code_t create(database_t * DB,char* table_name, list_t columns_declaration)
 {
 	return FAILURE;
 }
 
-return_code_t drop(char* table_name)
+return_code_t drop(database_t * DB,char* table_name)
 {
 	return FAILURE;
 }
 
-return_code_t insert(char* table_name, list_t column_values)
+return_code_t insert(database_t * DB,char* table_name, list_t column_values)
 {
 	return FAILURE;
 }
 
-return_code_t delete(char* table_name, list_t conditions)
+return_code_t delete(database_t * DB,char* table_name, list_t conditions)
 {
 	return FAILURE;
 }
 
-list_t select(list_t columns_names, char* from, list_t conditions)
+list_t select(database_t * DB,list_t columns_names, char* from, list_t conditions)
 {
-	return list_t();
+	return 0;
 }
 
-response_t exec_query(char* query)
+response_t exec_query(database_t * DB,char* query)
 {
-	return response_t();
+	return 0;
 }
