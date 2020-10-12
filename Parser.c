@@ -16,7 +16,7 @@ return_code_t parse_create(database_t* DB) {
 	ptr = db_strtok(NULL);
 	while (ptr != NULL && db_strcmp(ptr, ")"))
 	{
-		column_declaration_t* column = dbmalloc(sizeof(column_declaration_t));
+		column_declaration_t* column = db_malloc(sizeof(column_declaration_t));
 		column->type = string_to_type(ptr);
 		column->name = copy_string(db_strtok(NULL));
 		columns_declaration = add_to_the_end(columns_declaration, column);
@@ -28,7 +28,7 @@ return_code_t parse_create(database_t* DB) {
 	}
 	if (!ptr || db_strcmp(ptr, ")"))
 	{
-		printf_s("Syntax problem in: %s", ptr);
+		//printf("Syntax problem in: %s", ptr);
 		free_list(columns_declaration, COLUMN_DECLARATION);
 		return FAILURE;
 	}
@@ -56,13 +56,13 @@ return_code_t parse_insert(database_t* DB) {
 	ptr = db_strtok(NULL);
 	while (ptr != NULL && db_strcmp(ptr, ")"))
 	{
-		column_value_t* column = dbmalloc(sizeof(column_value_t));
+		column_value_t* column = db_malloc(sizeof(column_value_t));
 		column->name = copy_string(ptr);
 		ptr = db_strtok(NULL);
 		if (db_strcmp(ptr, "=")) {
-			dbfree(column);
+			db_free(column);
 			free_list(column_values, COLUMN_VALUE);
-			printf_s("Syntax problem in: %s", ptr);
+			//printf("Syntax problem in: %s", ptr);
 			return FAILURE;
 		}
 		ptr = db_strtok(NULL);
@@ -75,9 +75,9 @@ return_code_t parse_insert(database_t* DB) {
 			column->type = STRING;
 		}
 		else {
-			printf_s("Syntax problem in: %s", ptr);
-			dbfree(column->name);
-			dbfree(column);
+			//printf("Syntax problem in: %s", ptr);
+			db_free(column->name);
+			db_free(column);
 			free_list(column_values, COLUMN_VALUE);
 			return FAILURE;
 		}
@@ -90,7 +90,7 @@ return_code_t parse_insert(database_t* DB) {
 	}
 	if (!ptr || db_strcmp(ptr, ")"))
 	{
-		printf_s("Syntax problem in: %s", ptr);
+		//printf("Syntax problem in: %s", ptr);
 		free_list(column_values, COLUMN_VALUE);
 		return FAILURE;
 	}
@@ -108,11 +108,11 @@ return_code_t parse_delete(database_t* DB) {
 		// This will return NULL on empty condition list and on any error inside parse_conditions()
 		conditions = parse_conditions();
 	else {
-		printf_s("Syntax problem in: %s", ptr);
+		//printf("Syntax problem in: %s", ptr);
 		return FAILURE;
 	}
 	return_code_t code = DB_delete(DB, table_name, conditions);
-	dbfree(table_name);
+	db_free(table_name);
 	free_list(conditions, CONDITION);
 	return code;
 }
@@ -150,7 +150,7 @@ list_t* parse_conditions()
 		char* operator = copy_string(db_strtok(NULL));
 		char* value = copy_string(db_strtok(NULL));
 
-		condition_t* condition = dbmalloc(sizeof(condition_t));
+		condition_t* condition = db_malloc(sizeof(condition_t));
 		condition->column_name = column_name;
 		condition->ctype = get_ctype(operator);
 		if (is_number(value)) {
@@ -162,26 +162,26 @@ list_t* parse_conditions()
 			condition->is_value_int = FALSE;
 		}
 		else {
-			printf_s("Syntax problem in: %s", value);
-			dbfree(column_name);
-			dbfree(operator);
-			dbfree(value);
-			dbfree(condition);
+			//printf("Syntax problem in: %s", value);
+			db_free(column_name);
+			db_free(operator);
+			db_free(value);
+			db_free(condition);
 			free_list(conditions, CONDITION);
 			return NULL;
 		}
 		ptr = db_strtok(NULL);
 		if (ptr != NULL && db_strcmp(ptr, "AND")) {
-			printf_s("Syntax problem in: %s", ptr);
-			dbfree(column_name);
-			dbfree(operator);
-			dbfree(value);
-			dbfree(condition);
+			//printf("Syntax problem in: %s", ptr);
+			db_free(column_name);
+			db_free(operator);
+			db_free(value);
+			db_free(condition);
 			free_list(conditions, CONDITION);
 			return NULL;
 		}
-		dbfree(operator);
-		dbfree(value);
+		db_free(operator);
+		db_free(value);
 		conditions = add_to_list(conditions, condition);
 		ptr = db_strtok(NULL);
 	}
@@ -203,7 +203,7 @@ column_type_t string_to_type(char* str_type) {
 		return INT;
 	if (!db_strcmp(str_type, "STRING"))
 		return STRING;
-	printf_s("Rceived a bad type: %s", str_type);
+	//printf("Rceived a bad type: %s", str_type);
 	return 0;
 }
 
@@ -233,14 +233,14 @@ condition_type_t get_ctype(char* operator) {
 		return SMALLER;
 	if (!db_strcmp(operator,"<="))
 		return SMALLER_AND_EQUAL;
-	printf_s("Unknown condition operator: %s", operator);
+	//printf("Unknown condition operator: %s", operator);
 	//sassert(FALSE);
 	return EQUAL;
 }
 
 void print_results(list_t* results) {
 	if (!results) {
-		printf_s("No results\n");
+		//printf("No results\n");
 	}
 	list_t* current_row = results;
 	while (current_row != NULL)
@@ -253,16 +253,16 @@ void print_results(list_t* results) {
 			switch (column->type)
 			{
 			case INT:
-				printf_s("%d", (int)column->value);
+				//printf("%d", (int)column->value);
 				break;
 			case STRING:
-				printf_s("%s", (char*)column->value);
+				//printf("%s", (char*)column->value);
 				break;
 			default:
-				printf_s("Can't print this column");
+				//printf("Can't print this column");
 				break;
 			}
-			printf_s("%s", current_column->next ? "," : "\n");
+			//printf("%s", current_column->next ? "," : "\n");
 			current_column = current_column->next;
 		}
 		current_row = current_row->next;
@@ -270,11 +270,11 @@ void print_results(list_t* results) {
 }
 
 return_code_t parse_query(database_t* DB, char* query) {
-	printf_s(">\n%s\n", query);
+	//printf(">\n%s\n", query);
 
 	char* ptr = db_strtok(query);
 	if (!ptr) {
-		printf_s("Please enter a command\n");
+		//printf("Please enter a command\n");
 		return SUCCESS;
 	}
 	if (!db_strcmp(ptr, "CREATE"))
@@ -291,15 +291,15 @@ return_code_t parse_query(database_t* DB, char* query) {
 		return FAILURE;
 	}
 
-	printf_s("Unknown command: %s", ptr);
+	//printf("Unknown command: %s", ptr);
 	return FAILURE;
 }
 
 void parser_prompt() {
-	printf_s("Initiliazing DB - ");
+	//printf("Initiliazing DB - ");
 	char buffer[1000];
 	database_t* DB = db_ctor();
-	printf_s("OK TO GO!\n");
+	//printf("OK TO GO!\n");
 	return_code_t result = SUCCESS;
 	while (result == SUCCESS)
 	{

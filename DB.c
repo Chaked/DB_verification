@@ -1,19 +1,14 @@
 #include "DB.h"
 
-
-
-
 list_t* get_table_object_from_DB(database_t* DB, char* table_name) {
 	list_t* current = DB->tables;
 	while (current != NULL)
 	{
 		table_t* current_table = current->value;
-		//sassert(current_table != NULL);
 		if (!db_strcmp(table_name, current_table->name))
 			return current;
 		current = current->next;
 	}
-	//assume(current == NULL);
 	return NULL;
 }
 
@@ -26,19 +21,18 @@ row_t* column_list_to_row(list_t* column_values, table_t* table) {
 		return NULL;
 	list_t* copy = NULL;
 	while (column_values != NULL) {
-		//sassume(column_values->value != NULL);
 		copy = add_to_list(copy, (void*)copy_column_value(column_values->value));
 		column_values = column_values->next;
 	}
-	row_t* result = dbmalloc(sizeof(row_t));
+	row_t* result = db_malloc(sizeof(row_t));
 	result->values = copy;
 	return result;
 }
 
 //Deep copy of a column value
 column_value_t* copy_column_value(column_value_t* column_value) {
-	column_value_t* copy = dbmalloc(sizeof(column_value_t));
-	copy->name = dbmalloc(db_strlen(column_value->name) + 1);
+	column_value_t* copy = db_malloc(sizeof(column_value_t));
+	copy->name = db_malloc(db_strlen(column_value->name) + 1);
 	db_strcpy(copy->name, db_strlen(column_value->name) + 1,column_value->name);
 	copy->type = column_value->type;
 	switch (copy->type) {
@@ -46,7 +40,7 @@ column_value_t* copy_column_value(column_value_t* column_value) {
 		copy->value = column_value->value;
 		break;
 	case STRING:
-		copy->value = dbmalloc(db_strlen(column_value->value) + 1);
+		copy->value = db_malloc(db_strlen(column_value->value) + 1);
 		db_strcpy(copy->value, db_strlen(column_value->value) + 1,column_value->value);
 		break;
 	default:
@@ -143,10 +137,9 @@ boolean_t string_condition(char* l_operand, char* r_operand, condition_t* condit
 	case NOT_EQUAL:
 		return db_strcmp(l_operand, r_operand);
 	default:
-		printf_s("Illegal string condition");
+		//printf_s("Illegal string condition");
 		break;
 	}
-	//sassert(FALSE);
 	//Undefiend behaviuor
 	return FALSE;
 }
@@ -168,10 +161,9 @@ boolean_t int_condition(int l_operand, int r_operand, condition_t* condition) {
 		return l_operand <= r_operand;
 
 	default:
-		printf_s("Illegal string condition");
+		//printf_s("Illegal string condition");
 		break;
 	}
-	//sassert(FALSE);
 	//Undefiend behaviuor
 	return FALSE;
 }
@@ -186,14 +178,13 @@ boolean_t condition_is_valid(condition_t* condition, column_type_t type) {
 
 
 row_t* copy_row(row_t* row_to_copy) {
-	row_t* new_row = dbmalloc(sizeof(row_t));
-	//memcpy(new_row, row_to_copy, sizeof(row_t));
+	row_t* new_row = db_malloc(sizeof(row_t));
 	new_row->values = NULL;
 	list_t* current_column = row_to_copy->values;
 	while (current_column != NULL)
 	{
 		//Create the row
-		column_value_t* new_column = dbmalloc(sizeof(column_value_t));
+		column_value_t* new_column = db_malloc(sizeof(column_value_t));
 		memcpy(new_column, current_column->value, sizeof(column_value_t));
 		new_column->name = copy_string(new_column->name);
 		if (new_column->type == STRING) 
@@ -207,40 +198,20 @@ row_t* copy_row(row_t* row_to_copy) {
 
 database_t* db_ctor()
 {
-	database_t* DB = (database_t*)dbmalloc(sizeof(database_t));
+	database_t* DB = (database_t*)db_malloc(sizeof(database_t));
 	DB->tables = NULL;
-	//sassert(malloc_count == 0);
 	return DB;
 }
 
 void db_dtor(database_t* DB)
 {
 	free_list(DB->tables, TABLE);
-	/*list_t* current_table = DB->tables;
-	while (current_table != NULL) {
-		table_t* table = current_table->value;
-		free_list(table->columns);
-		list_t* current_row = table->rows;
-		while (current_row != NULL)
-		{
-			free_list(((row_t*)current_row->value)->values);
-			dbfree(current_row->value);
-			list_t* to_delete = current_row;
-			current_row = current_row->next;
-			dbfree(current_row);
-		}
-		list_t* to_delete = current_table;
-		current_table = current_table->next;
-		dbfree(to_delete);
-
-	}*/
-	dbfree(DB);
-	//sassert(malloc_count == 0);
+	db_free(DB);
 }
 
 return_code_t DB_create(database_t* DB,  char* table_name, list_t* columns_declaration)
 {
-	table_t* table = dbmalloc(sizeof(table_t));
+	table_t* table = db_malloc(sizeof(table_t));
 	if (table == NULL)
 		return FAILURE;
 	table->columns = columns_declaration;
@@ -270,7 +241,7 @@ return_code_t DB_insert(database_t* DB,  char* table_name, list_t* column_values
 {
 	list_t* table_node = get_table_object_from_DB(DB, table_name);
 	if (!table_node) {
-		printf_s("No such table: %s\n", table_name);
+		//printf_s("No such table: %s\n", table_name);
 		return FAILURE;
 	}
 	table_t* table = (table_t*)table_node->value;
@@ -295,7 +266,7 @@ return_code_t DB_delete(database_t* DB,  char* table_name, list_t* conditions)
 		deleted += to_delete ? 1 : 0;
 		to_delete = get_row_to_delete(table, conditions);
 	}
-	printf_s("%d rows were deleted", deleted);
+	//printf_s("%d rows were deleted", deleted);
 	return SUCCESS;
 }
 
@@ -304,7 +275,7 @@ list_t* DB_select(database_t* DB,  char* from, list_t* conditions)
 {
 	list_t* table_node = get_table_object_from_DB(DB, from);
 	if (!table_node) {
-		printf_s("No such table: %s\n", from);
+		//printf_s("No such table: %s\n", from);
 		return NULL;
 	}
 	table_t* table = (table_t*)table_node->value;
@@ -316,13 +287,13 @@ list_t* DB_select(database_t* DB,  char* from, list_t* conditions)
 		if (row_satisfy_condition(current->value, conditions, table)) {
 			row_t* to_add = copy_row((row_t*)current->value);
 			if (!to_add) {
-				printf_s("Problem allocating memory");
+				//printf_s("Problem allocating memory");
 				free_list(results, ROW);
 				return NULL;
 			}
 			list_t* temp_results = add_to_list(results, to_add);
 			if (!temp_results) {
-				printf_s("Problem allocating memory");
+				//printf_s("Problem allocating memory");
 				free_list(results, ROW);
 				return NULL;
 			}

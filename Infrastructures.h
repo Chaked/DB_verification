@@ -1,4 +1,4 @@
-//#include "seahorn/seahorn.h"
+#include "seahorn/seahorn.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,8 +19,6 @@ typedef struct _list {
 	struct _list* next;
 	void* value;
 } list_t;
-
-
 
 //An object defining a clomun
 typedef struct _column_declaration {
@@ -44,36 +42,42 @@ typedef struct _condition {
 
 typedef struct _response {
 	boolean_t is_list;
+	//List of row_t*
 	list_t* results;
 	return_code_t code;
 } response_t;
 
 typedef struct _table {
 	char* name;
+	//List of column_declaration_t*
 	list_t* columns;
+	//List of row_t*
 	list_t* rows;
 } table_t;
 
 typedef struct _row {
-	//List of column_value_t
+	//List of column_value_t*
 	list_t* values;
 } row_t;
 
-
 typedef struct _database {
+	//List of table_t*
 	list_t* tables;
 } database_t;
 
 
-void* dbmalloc(size_t size);
-void dbfree(void* pointer);
+void* db_malloc(size_t size);
+void db_free(void* pointer);
 void done(int test_id);
 char* copy_string(char* src);
 char* db_strcpy(char* des, int dest_size, char* src);
 char* db_strtok(char* str);
 int db_strlen(char* str);
 int db_strcmp(char* str1, char * str2);
+char * db_concat(char* str1, char* str2);
 
 //SEAHORN SECTION
-//extern int nd(void);
+extern int nd(void);
+extern char * str_nd(void);
+
 

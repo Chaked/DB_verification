@@ -6,10 +6,10 @@ void* stored_ptr = NULL;
 boolean_t have_we_stored_a_ptr = FALSE;
 boolean_t have_we_freed_the_stored_ptr = FALSE;
 
-void* dbmalloc(size_t size) {
+void* db_malloc(size_t size) {
 	void* result = malloc(size);
 	if (result == NULL) {
-		printf_s("Problem allocating memory");
+		//printf("Problem allocating memory");
 		return NULL;
 	} else
 		malloc_count++;
@@ -23,11 +23,10 @@ void* dbmalloc(size_t size) {
 	return result;
 }
 
-void dbfree(void* ptr) {
+void db_free(void* ptr) {
 
-	//sassert(malloc_count > 0);
-	//sassert(ptr);
-	//sassert this is freed only when it isn't pointed
+	//sassert(malloc_count > 0); // Assert we don't try to free when nothing is allocated
+	//sassert(ptr); //Assert we are not freeing any null pointer
 	if (ptr == stored_ptr) 
 		have_we_freed_the_stored_ptr = TRUE;
 	malloc_count--;
@@ -35,13 +34,23 @@ void dbfree(void* ptr) {
 }
 
 void done(int test_id) {
-	//	sassert(malloc_count == 0);
-	//sassert(have_we_freed_the_stored_ptr);
+	switch (test_id)
+	{
+	case 0: 
+		sassert(malloc_count == 0);
+		break;
+	case 1: 
+		//sassert(have_we_freed_the_stored_ptr);
+		break;
+	default:
+		break;
+	}
+
 }
 
 char* copy_string(char* src) {
 	int res_size = db_strlen(src) + 1;
-	char* res = dbmalloc(res_size);
+	char* res = db_malloc(res_size);
 	if (res == NULL)
 		return NULL;
 	db_strcpy(res, res_size ,src);
@@ -50,7 +59,7 @@ char* copy_string(char* src) {
 }
 
 char* db_strcpy(char* des, int dest_size, char* src) {
-	if (des == NULL)
+	if (des == NULL || src == NULL)
 		return NULL;
 	
 	boolean_t last_char = FALSE;
@@ -112,5 +121,15 @@ int db_strcmp(char* str1, char* str2) {
 		return 0;
 	return 1;
 }
+
+char * db_concat(char* str1, char* str2) {
+	int str1_size = db_strlen(str1);
+	int str2_size = db_strlen(str2);
+	char* result = db_malloc(str1_size + str2_size + 1);
+	result = db_strcpy(result, str1_size+1, str1);
+	db_strcpy(&result[str1_size], str2_size+1, str2);
+	return result;
+}
+
 
 
