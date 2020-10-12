@@ -143,7 +143,7 @@ boolean_t string_condition(char* l_operand, char* r_operand, condition_t* condit
 	case NOT_EQUAL:
 		return db_strcmp(l_operand, r_operand);
 	default:
-		//printf_s("Illegal string condition");
+		printf_s("Illegal string condition");
 		break;
 	}
 	//sassert(FALSE);
@@ -168,7 +168,7 @@ boolean_t int_condition(int l_operand, int r_operand, condition_t* condition) {
 		return l_operand <= r_operand;
 
 	default:
-		//printf_s("Illegal string condition");
+		printf_s("Illegal string condition");
 		break;
 	}
 	//sassert(FALSE);
@@ -270,7 +270,7 @@ return_code_t DB_insert(database_t* DB,  char* table_name, list_t* column_values
 {
 	list_t* table_node = get_table_object_from_DB(DB, table_name);
 	if (!table_node) {
-		//printf_s("No such table: %s\n", table_name);
+		printf_s("No such table: %s\n", table_name);
 		return FAILURE;
 	}
 	table_t* table = (table_t*)table_node->value;
@@ -295,7 +295,7 @@ return_code_t DB_delete(database_t* DB,  char* table_name, list_t* conditions)
 		deleted += to_delete ? 1 : 0;
 		to_delete = get_row_to_delete(table, conditions);
 	}
-	//printf_s("%d rows were deleted", deleted);
+	printf_s("%d rows were deleted", deleted);
 	return SUCCESS;
 }
 
@@ -304,7 +304,7 @@ list_t* DB_select(database_t* DB,  char* from, list_t* conditions)
 {
 	list_t* table_node = get_table_object_from_DB(DB, from);
 	if (!table_node) {
-		//printf_s("No such table: %s\n", from);
+		printf_s("No such table: %s\n", from);
 		return NULL;
 	}
 	table_t* table = (table_t*)table_node->value;
@@ -316,13 +316,13 @@ list_t* DB_select(database_t* DB,  char* from, list_t* conditions)
 		if (row_satisfy_condition(current->value, conditions, table)) {
 			row_t* to_add = copy_row((row_t*)current->value);
 			if (!to_add) {
-				//printf_s("Problem allocating memory");
+				printf_s("Problem allocating memory");
 				free_list(results, ROW);
 				return NULL;
 			}
 			list_t* temp_results = add_to_list(results, to_add);
 			if (!temp_results) {
-				//printf_s("Problem allocating memory");
+				printf_s("Problem allocating memory");
 				free_list(results, ROW);
 				return NULL;
 			}

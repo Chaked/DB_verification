@@ -28,7 +28,7 @@ return_code_t free_list_node_rec(list_t* to_delete, type_t value_type) {
 		free_list(((row_t*)value)->values, COLUMN_VALUE);
 		break;
 	default:
-		//printf_s("Received unknown list type to delete: %d", value_type);
+		printf_s("Received unknown list type to delete: %d", value_type);
 		return FAILURE;
 	}
 	dbfree(to_delete->value);
@@ -95,7 +95,7 @@ return_code_t free_list_node(list_t* to_delete, type_t value_type) {
 			states = push_to_state_list_of_nodes(states, ((row_t*)value)->values, COLUMN_VALUE);
 			break;
 		default:
-			//printf_s("Received unknown list type to delete: %d", current_state->value_type);
+			printf_s("Received unknown list type to delete: %d", current_state->value_type);
 			return FAILURE;
 		}
 		dbfree(current_state->to_delete->value);

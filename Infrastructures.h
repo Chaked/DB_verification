@@ -1,4 +1,4 @@
-#include "seahorn/seahorn.h"
+//#include "seahorn/seahorn.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -67,7 +67,7 @@ typedef struct _database {
 
 void* dbmalloc(size_t size);
 void dbfree(void* pointer);
-void done();
+void done(int test_id);
 char* copy_string(char* src);
 char* db_strcpy(char* des, int dest_size, char* src);
 char* db_strtok(char* str);
@@ -75,5 +75,5 @@ int db_strlen(char* str);
 int db_strcmp(char* str1, char * str2);
 
 //SEAHORN SECTION
-extern int nd(void);
+//extern int nd(void);
 
