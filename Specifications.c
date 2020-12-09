@@ -129,7 +129,7 @@ void insert_and_select() {
 	
 	list_t* results = DB_select(DB, "users", conditions);
 	sassert(results->next == NULL);
-	sassert((int)(((column_value_t*)(((row_t*)(results->value))->values->next->value))->value) == atoi(id));
+	sassert((int)(((column_value_t*)(((row_t*)(results->value))->values->next->value))->value) == db_atoi(id));
 
 	db_free(query);
 	db_free(condition);

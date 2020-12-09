@@ -2,6 +2,39 @@
 
 char DELIMETERS[] = " \t\n\v\f\r";
 
+int db_atoi( char* str)
+{
+	int sign = 1, base = 0, i = 0;
+
+	// if whitespaces then ignore.
+	while (str[i] == ' ')
+	{
+		i++;
+	}
+	// sign of number
+	if (str[i] == '-' || str[i] == '+')
+	{
+		sign = 1 - 2 * (str[i++] == '-');
+	}
+	// checking for valid input
+	while (str[i] >= '0' && str[i] <= '9')
+	{
+		// handling overflow test case
+		if (base > INT_MAX / 10
+			|| (base == INT_MAX / 10
+				&& str[i] - '0' > 7))
+		{
+			if (sign == 1)
+				return INT_MAX;
+			else
+				return INT_MIN;
+		}
+		base = 10 * base + (str[i++] - '0');
+	}
+	return base * sign;
+}
+
+
 return_code_t parse_create(database_t* DB) {
 
 	char* ptr = db_strtok(NULL);
@@ -67,7 +100,7 @@ return_code_t parse_insert(database_t* DB) {
 		}
 		ptr = db_strtok(NULL);
 		if (is_number(ptr)) {
-			column->value = (void*)atoi(ptr);
+			column->value = (void*)db_atoi(ptr);
 			column->type = INT;
 		}
 		else if (is_sql_format_string(ptr)) {
@@ -154,7 +187,7 @@ list_t* parse_conditions()
 		condition->column_name = column_name;
 		condition->ctype = get_ctype(operator);
 		if (is_number(value)) {
-			condition->value = (void*)atoi(value);
+			condition->value = (void*)db_atoi(value);
 			condition->is_value_int = TRUE;
 		}
 		else if (is_sql_format_string(value)) {

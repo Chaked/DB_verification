@@ -13,3 +13,4 @@ condition_type_t get_ctype(char* operator);
 list_t* parse_conditions();
 void print_results(list_t* results); 
 void parser_prompt();
+int db_atoi(char* str);

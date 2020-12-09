@@ -76,6 +76,7 @@ int db_strlen(char* str);
 int db_strcmp(char* str1, char * str2);
 char * db_concat(char* str1, char* str2);
 
+
 //SEAHORN SECTION
 extern int nd(void);
 extern char * str_nd(void);
