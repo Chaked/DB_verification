@@ -37,11 +37,11 @@ column_value_t* copy_column_value(column_value_t* column_value) {
 	copy->type = column_value->type;
 	switch (copy->type) {
 	case INT:
-		copy->value = column_value->value;
+		copy->value.i = column_value->value.i;
 		break;
 	case STRING:
-		copy->value = db_malloc(db_strlen(column_value->value) + 1);
-		db_strcpy(copy->value, db_strlen(column_value->value) + 1,column_value->value);
+		copy->value.str = db_malloc(db_strlen(column_value->value.str) + 1);
+		db_strcpy(copy->value.str, db_strlen(column_value->value.str) + 1,column_value->value.str);
 		break;
 	default:
 		//sassert(FALSE);
@@ -114,10 +114,10 @@ row_t* row_satisfy_condition(row_t* row, list_t* conditions, table_t* table) {
 			switch (column->type)
 			{
 			case STRING:
-				result = result && string_condition(column->value, condition->value, condition);
+				result = result && string_condition(column->value.str, condition->value.str, condition);
 				break;
 			case INT:
-				result = result && int_condition((int)column->value, (int)condition->value, condition);
+				result = result && int_condition(column->value.i, condition->value.i, condition);
 				break;
 			default:
 				break;
@@ -188,7 +188,7 @@ row_t* copy_row(row_t* row_to_copy) {
 		memcpy(new_column, current_column->value, sizeof(column_value_t));
 		new_column->name = copy_string(new_column->name);
 		if (new_column->type == STRING) 
-			new_column->value = copy_string(new_column->value);
+			new_column->value.str = copy_string(new_column->value.str);
 		new_row->values = add_to_the_end(new_row->values, new_column);
 		current_column = current_column->next;
 	}

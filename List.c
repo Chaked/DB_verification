@@ -41,12 +41,12 @@ return_code_t free_list_node(list_t* to_delete, type_t value_type) {
 		case COLUMN_VALUE:
 			db_free(((column_value_t*)value)->name);
 			if (((column_value_t*)value)->type == STRING)
-				db_free(((column_value_t*)value)->value);
+				db_free(((column_value_t*)value)->value.str);
 			break;
 		case CONDITION:
 			db_free(((condition_t*)value)->column_name);
 			if (!((condition_t*)value)->is_value_int)
-				db_free(((condition_t*)value)->value);
+				db_free(((condition_t*)value)->value.i); //WHY DID I DO THIS?
 			break;
 		case TABLE: {
 			table_t* table = (table_t*)value;

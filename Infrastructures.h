@@ -20,6 +20,12 @@ typedef struct _list {
 	void* value;
 } list_t;
 
+typedef union _value {
+	int i;
+	char* str;
+} value_t;
+
+
 //An object defining a clomun
 typedef struct _column_declaration {
 	char* name;
@@ -30,14 +36,14 @@ typedef struct _column_declaration {
 typedef struct _column_value {
 	char* name;
 	column_type_t type;
-	void* value;
+	value_t value;
 } column_value_t;
 
 typedef struct _condition {
 	condition_type_t ctype;
 	boolean_t is_value_int;
 	char* column_name;
-	void* value;//This is char* or int
+	value_t value;//This is char* or int
 } condition_t;
 
 typedef struct _response {

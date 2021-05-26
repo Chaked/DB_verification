@@ -10,7 +10,7 @@ void deterministic_test() {
 	char* brk = "=========================\n";
 	char query[] = "CREATE TABLE users ( INT id , STRING name )";
 	parse_query(DB, query); // Seahorn crashes if the query is sent directly to parse_query(). 
-	/*
+	
 	// When above succeed, change all the calls bellow to send a variable and not the string itself
 
 	parse_query(DB, "INSERT users ( id = 100 , name = 'shakED' )");
@@ -49,11 +49,12 @@ void deterministic_test() {
 	//printf(brk);
 	parse_query(DB, "SELECT * FROM users2");
 	//printf(brk);
-	*/
+	
 	db_dtor(DB);
 	done(0);
 }
 
+/*
 
 // This a non deteministec program. It aims to prove that there are no memory leaks.
 // There is a assert in done() which verifies that the ptr chosen (non deterministicaly) was freed.  
@@ -129,13 +130,13 @@ void insert_and_select() {
 	
 	list_t* results = DB_select(DB, "users", conditions);
 	sassert(results->next == NULL);
-	sassert((int)(((column_value_t*)(((row_t*)(results->value))->values->next->value))->value) == db_atoi(id));
+	sassert((((column_value_t*)(((row_t*)(results->value))->values->next->value))->value.i) == db_atoi(id));
 
 	db_free(query);
 	db_free(condition);
 	free_list(conditions, CONDITION);
 	db_dtor(DB);
-}
+}*/
 
 
 int main() {

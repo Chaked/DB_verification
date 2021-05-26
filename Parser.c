@@ -102,11 +102,11 @@ return_code_t parse_insert(database_t* DB) {
 		}
 		ptr = db_strtok(NULL);
 		if (is_number(ptr)) {
-			column->value = (void*)db_atoi(ptr);
+			column->value.i = db_atoi(ptr);
 			column->type = INT;
 		}
 		else if (is_sql_format_string(ptr)) {
-			column->value = parse_sql_format_string(ptr);
+			column->value.str = parse_sql_format_string(ptr);
 			column->type = STRING;
 		}
 		else {
@@ -189,11 +189,11 @@ list_t* parse_conditions()
 		condition->column_name = column_name;
 		condition->ctype = get_ctype(operator);
 		if (is_number(value)) {
-			condition->value = (void*)db_atoi(value);
+			condition->value.i = db_atoi(value);
 			condition->is_value_int = TRUE;
 		}
 		else if (is_sql_format_string(value)) {
-			condition->value = parse_sql_format_string(value);
+			condition->value.str = parse_sql_format_string(value);
 			condition->is_value_int = FALSE;
 		}
 		else {
