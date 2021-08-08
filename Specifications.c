@@ -8,11 +8,30 @@ void deterministic_test() {
 
 	database_t* DB = db_ctor();
 	char* brk = "=========================\n";
-	char query[] = "CREATE TABLE users ( INT id , STRING name )";
-	parse_query(DB, query); // Seahorn crashes if the query is sent directly to parse_query(). 
+	//char query[] = "CREATE TABLE users ( INT id , STRING name )";
+	//parse_query(DB, query); // Seahorn crashes if the query is sent directly to parse_query(). 
 	
-	// When above succeed, change all the calls bellow to send a variable and not the string itself
+	
+	char* table_name = "users";
 
+	list_t* columns_declaration = NULL;
+
+		column_declaration_t* column = db_malloc(sizeof(column_declaration_t));
+		column->type = "INT";
+		column->name = "id";
+		columns_declaration = add_to_the_end(columns_declaration, column);
+
+		//second
+
+		column_declaration_t* column = db_malloc(sizeof(column_declaration_t));
+		column->type = "STRING";
+		column->name = "name";
+		columns_declaration = add_to_the_end(columns_declaration, column);
+
+	DB_create(DB, table_name, columns_declaration);
+
+	// When above succeed, change all the calls bellow to send a variable and not the string itself
+	/*
 	parse_query(DB, "INSERT users ( id = 100 , name = 'shakED' )");
 	parse_query(DB, "SELECT * FROM users");
 	parse_query(DB, "INSERT users ( id = 200 , name = 'Miel' )");
@@ -49,7 +68,7 @@ void deterministic_test() {
 	//printf(brk);
 	parse_query(DB, "SELECT * FROM users2");
 	//printf(brk);
-	
+	*/
 	db_dtor(DB);
 	done(0);
 }
