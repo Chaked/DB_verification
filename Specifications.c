@@ -15,6 +15,7 @@ void deterministic_test() {
 	dbapi_insert(DB, "users", "id", 301, NULL, "name", 0, "Liya",/*here foward are junk values*/NULL, 0, NULL);
 	dbapi_select(DB, "users", NULL, 0, 0, NULL, NULL, 0, 0, NULL, NULL, 0, 0, NULL);
 	dbapi_select(DB, "users", "id", BIGGER_AND_EQUAL, 80, NULL, NULL, 0, 0, NULL, NULL, 0, 0, NULL);
+	dbapi_select(DB, "users", "id", BIGGER_AND_EQUAL, 80, NULL, "name", EQUAL, 0, "Liya", NULL, 0, 0, NULL);
 	dbapi_drop_table(DB, "users");
 	// When above succeed, change all the calls bellow to send a variable and not the string itself
 	/*
