@@ -1,6 +1,5 @@
 
-#include "Parser.h"
-
+#include "DB_API.h"
 
 // This test is a regular test case with determined commaned.
 // It is used for sanity checks. Once I will make this work, I will execute the other tests.
@@ -8,28 +7,15 @@ void deterministic_test() {
 
 	database_t* DB = db_ctor();
 	char* brk = "=========================\n";
-	//char query[] = "CREATE TABLE users ( INT id , STRING name )";
-	//parse_query(DB, query); // Seahorn crashes if the query is sent directly to parse_query(). 
-	
-	
-	char* table_name = "users";
-
-	list_t* columns_declaration = NULL;
-
-		column_declaration_t* column1 = db_malloc(sizeof(column_declaration_t));
-		column1->type = "INT";
-		column1->name = "id";
-		columns_declaration = add_to_the_end(columns_declaration, column1);
-
-		//second
-
-		column_declaration_t* column = db_malloc(sizeof(column_declaration_t));
-		column->type = "STRING";
-		column->name = "name";
-		columns_declaration = add_to_the_end(columns_declaration, column);
-
-	DB_create(DB, table_name, columns_declaration);
-
+	//parse_query(DB, "CREATE TABLE users ( INT id , STRING name )");
+	dbapi_create_table(DB,"users",INT,"id",STRING,"name",INT,NULL);
+	//parse_query(DB, "INSERT users ( id = 100 , name = 'shakED' )");
+	dbapi_insert(DB,"users","id",100,NULL,"name",0,"ShakeD",/*here foward are junk values*/NULL, 0, NULL);
+	dbapi_insert(DB, "users", "id", 20, NULL, "name", 0, "Miel",/*here foward are junk values*/NULL, 0, NULL);
+	dbapi_insert(DB, "users", "id", 301, NULL, "name", 0, "Liya",/*here foward are junk values*/NULL, 0, NULL);
+	dbapi_select(DB, "users", NULL, 0, 0, NULL, NULL, 0, 0, NULL, NULL, 0, 0, NULL);
+	dbapi_select(DB, "users", "id", BIGGER_AND_EQUAL, 80, NULL, NULL, 0, 0, NULL, NULL, 0, 0, NULL);
+	dbapi_drop_table(DB, "users");
 	// When above succeed, change all the calls bellow to send a variable and not the string itself
 	/*
 	parse_query(DB, "INSERT users ( id = 100 , name = 'shakED' )");
@@ -69,12 +55,11 @@ void deterministic_test() {
 	parse_query(DB, "SELECT * FROM users2");
 	//printf(brk);
 	*/
-	db_dtor(DB);
+  	db_dtor(DB);
 	done(0);
 }
 
 /*
-
 // This a non deteministec program. It aims to prove that there are no memory leaks.
 // There is a assert in done() which verifies that the ptr chosen (non deterministicaly) was freed.  
 void no_mem_leaks() {
@@ -128,7 +113,7 @@ void no_mem_leaks() {
 	db_dtor(DB);
 	done(1);
 }
-
+/*
 void insert_and_select() {
 	database_t* DB = db_ctor();
 

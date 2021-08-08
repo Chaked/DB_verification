@@ -42,7 +42,7 @@ return_code_t parse_create(database_t* DB) {
 	char* ptr = db_strtok(NULL);
 	if (db_strcmp(ptr, "TABLE"))
 		return FAILURE;
-	char* table_name = db_strtok(NULL);
+	char* table_name = /*db_strtok(NULL);*/copy_string(db_strtok(NULL));
 	ptr = db_strtok(NULL);
 	if (db_strcmp(ptr, "("))
 		return FAILURE;
@@ -275,7 +275,7 @@ condition_type_t get_ctype(char* operator) {
 
 void print_results(list_t* results) {
 	if (!results) {
-		//printf("No results\n");
+		printf("No results\n");
 	}
 	list_t* current_row = results;
 	while (current_row != NULL)
@@ -288,16 +288,16 @@ void print_results(list_t* results) {
 			switch (column->type)
 			{
 			case INT:
-				//printf("%d", (int)column->value);
+				printf("%d", column->value.i);
 				break;
 			case STRING:
-				//printf("%s", (char*)column->value);
+				printf("%s", column->value.str);
 				break;
 			default:
-				//printf("Can't print this column");
+				printf("Can't print this column");
 				break;
 			}
-			//printf("%s", current_column->next ? "," : "\n");
+			printf("%s", current_column->next ? "," : "\n");
 			current_column = current_column->next;
 		}
 		current_row = current_row->next;

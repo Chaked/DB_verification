@@ -40,7 +40,7 @@ Our DB will support the following queries:
 database_t* db_ctor();
 
 void db_dtor(database_t* DB);
-
+	
 return_code_t DB_create(database_t* DB,  char* table_name, list_t* columns_declaration);
 
 return_code_t DB_drop(database_t* DB,  char* table_name);

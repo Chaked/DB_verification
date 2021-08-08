@@ -231,8 +231,6 @@ return_code_t DB_drop(database_t* DB,  char* table_name)
 		return SUCCESS;
 	DB_delete(DB, table_name, NULL);
 	list_t* result = remove_from_list(DB->tables, table_node,TABLE);
-	if (result == NULL)
-		return FAILURE;
 	DB->tables = result;
 	return SUCCESS;
 }
