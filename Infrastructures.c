@@ -37,8 +37,8 @@ void done(int test_id) {
 	switch (test_id)
 	{
 	case 0: 
-		//sassert(malloc_count == 0);
-		if (malloc_count == 0) printf("Test 0 is successful");
+		sassert(malloc_count == 0);
+		//if (malloc_count == 0) printf("Test 0 is successful");
 		break;
 	case 1: 
 		//sassert(have_we_freed_the_stored_ptr);
