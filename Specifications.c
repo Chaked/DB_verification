@@ -16,10 +16,10 @@ void deterministic_test() {
 
 	list_t* columns_declaration = NULL;
 
-		column_declaration_t* column = db_malloc(sizeof(column_declaration_t));
-		column->type = "INT";
-		column->name = "id";
-		columns_declaration = add_to_the_end(columns_declaration, column);
+		column_declaration_t* column1 = db_malloc(sizeof(column_declaration_t));
+		column1->type = "INT";
+		column1->name = "id";
+		columns_declaration = add_to_the_end(columns_declaration, column1);
 
 		//second
 
