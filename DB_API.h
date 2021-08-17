@@ -23,3 +23,5 @@ return_code_t dbapi_delete(database_t* DB, char* table_name, char* col_n1, condi
 
 return_code_t dbapi_select(database_t* DB, char* table_name, char* col_n1, condition_type_t cond_t1, int col_v_i1, char* col_v_str1, char* col_n2, condition_type_t cond_t2, int col_v_i2, char* col_v_str2, char* col_n3, condition_type_t cond_t3, int col_v_i3, char* col_v_str3);
 
+void print_results(list_t* results);
+

@@ -53,7 +53,7 @@ return_code_t dbapi_create_table(database_t* DB, char* table_name, column_type_t
 }
 
 return_code_t dbapi_drop_table(database_t* DB, char* table_name) {
-	DB_drop(DB, table_name);
+	return DB_drop(DB, table_name);
 }
 
 return_code_t dbapi_insert(database_t* DB, char* table_name, char* col_n1, int col_v_i1, char* col_v_str1,  char* col_n2, int col_v_i2, char* col_v_str2,  char* col_n3, int col_v_i3, char* col_v_str3) {
@@ -69,8 +69,9 @@ return_code_t dbapi_insert(database_t* DB, char* table_name, char* col_n1, int c
 			}
 		}
 	}
-	DB_insert(DB, table_name, column_values);
+	return_code_t result = DB_insert(DB, table_name, column_values);
 	free_list(column_values, COLUMN_VALUE);
+	return result;
 }
 
 
@@ -115,5 +116,36 @@ return_code_t dbapi_select(database_t* DB, char* table_name, char* col_n1, condi
 	return SUCCESS;
 }
 
+
+void print_results(list_t* results) {
+	if (!results) {
+		printf("No results\n");
+	}
+	list_t* current_row = results;
+	while (current_row != NULL)
+	{
+		//sassert(current_row->value != NULL);
+		list_t* current_column = ((row_t*)current_row->value)->values;
+		while (current_column != NULL)
+		{
+			column_value_t* column = (column_value_t*)current_column->value;
+			switch (column->type)
+			{
+			case INT:
+				printf("%d", column->value.i);
+				break;
+			case STRING:
+				printf("%s", column->value.str);
+				break;
+			default:
+				printf("Can't print this column");
+				break;
+			}
+			printf("%s", current_column->next ? "," : "\n");
+			current_column = current_column->next;
+		}
+		current_row = current_row->next;
+	}
+}
 
 

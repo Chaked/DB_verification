@@ -273,36 +273,6 @@ condition_type_t get_ctype(char* operator) {
 	return EQUAL;
 }
 
-void print_results(list_t* results) {
-	if (!results) {
-		printf("No results\n");
-	}
-	list_t* current_row = results;
-	while (current_row != NULL)
-	{
-		//sassert(current_row->value != NULL);
-		list_t* current_column = ((row_t*)current_row->value)->values;
-		while (current_column != NULL)
-		{
-			column_value_t* column = (column_value_t*)current_column->value;
-			switch (column->type)
-			{
-			case INT:
-				printf("%d", column->value.i);
-				break;
-			case STRING:
-				printf("%s", column->value.str);
-				break;
-			default:
-				printf("Can't print this column");
-				break;
-			}
-			printf("%s", current_column->next ? "," : "\n");
-			current_column = current_column->next;
-		}
-		current_row = current_row->next;
-	}
-}
 
 return_code_t parse_query(database_t* DB, char* query) {
 	//printf(">\n%s\n", query);
