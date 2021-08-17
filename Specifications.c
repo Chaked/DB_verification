@@ -5,9 +5,9 @@
 // It is used for sanity checks. Once I will make this work, I will execute the other tests.
 void deterministic_test() {
 
-	const char* TABLE_NAME = "u";
-	const char* IDS_COLUMN = "i";
-	const char* NAMES_COLUMN = "n";
+	char* TABLE_NAME = "u";
+	char* IDS_COLUMN = "i";
+	char* NAMES_COLUMN = "n";
 
 	database_t* DB = db_ctor();
 	char* brk = "=========================\n";
