@@ -118,7 +118,7 @@ void no_mem_leaks() {
 	db_dtor(DB);
 	done(1);
 }
-/*
+
 void insert_and_select() {
 	database_t* DB = db_ctor();
 
