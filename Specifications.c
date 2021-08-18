@@ -12,14 +12,14 @@ void deterministic_test() {
 	database_t* DB = db_ctor();
 	char* brk = "=========================\n";
 	//parse_query(DB, "CREATE TABLE users ( INT id , STRING name )");
-	dbapi_create_table(DB,TABLE_NAME,INT,IDS_COLUMN,STRING,NAMES_COLUMN,INT,NULL);
+	dbapi_create_table(DB,TABLE_NAME,INT,IDS_COLUMN,INT,NAMES_COLUMN,INT,NULL);
 	//parse_query(DB, "INSERT users ( id = 100 , name = 'shakED' )");
-	dbapi_insert(DB,TABLE_NAME,IDS_COLUMN,100,NULL,NAMES_COLUMN,0,"S",/*here foward are junk values*/NULL, 0, NULL);
-	dbapi_insert(DB, TABLE_NAME, IDS_COLUMN, 20, NULL, NAMES_COLUMN, 0, "M",/*here foward are junk values*/NULL, 0, NULL);
-	dbapi_insert(DB, TABLE_NAME, IDS_COLUMN, 301, NULL, NAMES_COLUMN, 0, "L",/*here foward are junk values*/NULL, 0, NULL);
+	dbapi_insert(DB,TABLE_NAME,IDS_COLUMN,100,NULL,NAMES_COLUMN,35,NULL,/*here foward are junk values*/NULL, 0, NULL);
+	dbapi_insert(DB, TABLE_NAME, IDS_COLUMN, 20, NULL, NAMES_COLUMN, 234, NULL,/*here foward are junk values*/NULL, 0, NULL);
+	dbapi_insert(DB, TABLE_NAME, IDS_COLUMN, 301, NULL, NAMES_COLUMN, 2,NULL ,/*here foward are junk values*/NULL, 0, NULL);
 	dbapi_select(DB, TABLE_NAME, NULL, 0, 0, NULL, NULL, 0, 0, NULL, NULL, 0, 0, NULL);
 	dbapi_select(DB, TABLE_NAME, IDS_COLUMN, BIGGER_AND_EQUAL, 80, NULL, NULL, 0, 0, NULL, NULL, 0, 0, NULL);
-	dbapi_select(DB, TABLE_NAME, IDS_COLUMN, BIGGER_AND_EQUAL, 80, NULL, NAMES_COLUMN, EQUAL, 0, "L", NULL, 0, 0, NULL);
+	dbapi_select(DB, TABLE_NAME, IDS_COLUMN, BIGGER_AND_EQUAL, 80, NULL, NAMES_COLUMN, EQUAL,234, NULL, NULL, 0, 0, NULL);
 	dbapi_drop_table(DB, TABLE_NAME);
 	// When above succeed, change all the calls bellow to send a variable and not the string itself
 	/*
