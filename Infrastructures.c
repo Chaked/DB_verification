@@ -25,8 +25,8 @@ void* db_malloc(size_t size) {
 
 void db_free(void* ptr) {
 
-	//sassert(malloc_count > 0); // Assert we don't try to free when nothing is allocated
-	//sassert(ptr); //Assert we are not freeing any null pointer
+	sassert(malloc_count > 0); // Assert we don't try to free when nothing is allocated
+//	sassert(ptr); //Assert we are not freeing any null pointer
 	if (ptr == stored_ptr) 
 		have_we_freed_the_stored_ptr = TRUE;
 	malloc_count--;
