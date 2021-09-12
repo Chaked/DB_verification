@@ -5,21 +5,23 @@
 // It is used for sanity checks. Once I will make this work, I will execute the other tests.
 void deterministic_test() {
 
-	char* TABLE_NAME = "u";
-	char* IDS_COLUMN = "i";
-	char* NAMES_COLUMN = "n";
+	char* TABLE_NAME = "user";
+	char* IDS_COLUMN = "id";
+	char* NAMES_COLUMN = "name";
 
 	database_t* DB = db_ctor();
 	char* brk = "=========================\n";
 	//parse_query(DB, "CREATE TABLE users ( INT id , STRING name )");
-	dbapi_create_table(DB,TABLE_NAME,INT,IDS_COLUMN,INT,NAMES_COLUMN,INT,NULL);
+	dbapi_create_table(DB,TABLE_NAME,INT,IDS_COLUMN,STRING,NAMES_COLUMN,INT,NULL);
 	//parse_query(DB, "INSERT users ( id = 100 , name = 'shakED' )");
-	dbapi_insert(DB,TABLE_NAME,IDS_COLUMN,100,NULL,NAMES_COLUMN,35,NULL,/*here foward are junk values*/NULL, 0, NULL);
-	dbapi_insert(DB, TABLE_NAME, IDS_COLUMN, 20, NULL, NAMES_COLUMN, 234, NULL,/*here foward are junk values*/NULL, 0, NULL);
-	dbapi_insert(DB, TABLE_NAME, IDS_COLUMN, 301, NULL, NAMES_COLUMN, 2,NULL ,/*here foward are junk values*/NULL, 0, NULL);
+	dbapi_insert(DB, TABLE_NAME,IDS_COLUMN,100,NULL,NAMES_COLUMN,INT,"Shaked",/*here foward are junk values*/NULL, 0, NULL);
+	dbapi_insert(DB, TABLE_NAME, IDS_COLUMN, 20, NULL, NAMES_COLUMN, INT, "Liya",/*here foward are junk values*/NULL, 0, NULL);
+	dbapi_insert(DB, TABLE_NAME, IDS_COLUMN, 301, NULL, NAMES_COLUMN, INT,"Miel" ,/*here foward are junk values*/NULL, 0, NULL);
 	dbapi_select(DB, TABLE_NAME, NULL, 0, 0, NULL, NULL, 0, 0, NULL, NULL, 0, 0, NULL);
 	dbapi_select(DB, TABLE_NAME, IDS_COLUMN, BIGGER_AND_EQUAL, 80, NULL, NULL, 0, 0, NULL, NULL, 0, 0, NULL);
-	dbapi_select(DB, TABLE_NAME, IDS_COLUMN, BIGGER_AND_EQUAL, 80, NULL, NAMES_COLUMN, EQUAL,234, NULL, NULL, 0, 0, NULL);
+	dbapi_delete(DB, TABLE_NAME, IDS_COLUMN, BIGGER_AND_EQUAL, 80, NULL, NULL, 0, 0, NULL, NULL, 0, 0, NULL);
+	dbapi_delete(DB, TABLE_NAME, IDS_COLUMN, BIGGER_AND_EQUAL, 80, NULL, NULL, 0, 0, NULL, NULL, 0, 0, NULL);
+	dbapi_select(DB, TABLE_NAME, IDS_COLUMN, BIGGER_AND_EQUAL, 80, NULL, NAMES_COLUMN, EQUAL,INT, "Miel", NULL, 0, 0, NULL);
 	dbapi_drop_table(DB, TABLE_NAME);
 	// When above succeed, change all the calls bellow to send a variable and not the string itself
 	/*
