@@ -15,7 +15,7 @@ void* db_malloc(size_t size) {
 		malloc_count++;
 
 	//assume(result != NULL);
-	if (!have_we_stored_a_ptr){// && nd()) {
+	if (!have_we_stored_a_ptr && nd()) {
 		have_we_stored_a_ptr = TRUE;
 		stored_ptr = result;
 	}
@@ -41,7 +41,7 @@ void done(int test_id) {
 		//if (malloc_count == 0) printf("Test 0 is successful");
 		break;
 	case 1: 
-		//sassert(have_we_freed_the_stored_ptr);
+		sassert(have_we_freed_the_stored_ptr);
 		break;
 	default:
 		break;

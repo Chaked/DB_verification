@@ -1,13 +1,14 @@
 
 #include "DB_API.h"
 
+
+ char* TABLE_NAME = "user";
+        char* IDS_COLUMN = "id";
+        char* NAMES_COLUMN = "name";
+
 // This test is a regular test case with determined commaned.
 // It is used for sanity checks. Once I will make this work, I will execute the other tests.
 void deterministic_test() {
-
-	char* TABLE_NAME = "user";
-	char* IDS_COLUMN = "id";
-	char* NAMES_COLUMN = "name";
 
 	database_t* DB = db_ctor();
 	char* brk = "=========================\n";
@@ -23,57 +24,21 @@ void deterministic_test() {
 	dbapi_delete(DB, TABLE_NAME, IDS_COLUMN, BIGGER_AND_EQUAL, 80, NULL, NULL, 0, 0, NULL, NULL, 0, 0, NULL);
 	dbapi_select(DB, TABLE_NAME, IDS_COLUMN, BIGGER_AND_EQUAL, 80, NULL, NAMES_COLUMN, EQUAL,INT, "Miel", NULL, 0, 0, NULL);
 	dbapi_drop_table(DB, TABLE_NAME);
-	// When above succeed, change all the calls bellow to send a variable and not the string itself
-	/*
-	parse_query(DB, "INSERT users ( id = 100 , name = 'shakED' )");
-	parse_query(DB, "SELECT * FROM users");
-	parse_query(DB, "INSERT users ( id = 200 , name = 'Miel' )");
-	parse_query(DB, "SELECT * FROM users");
-	parse_query(DB, "INSERT users ( id = 300 , name = 'LiyaHallel' )");
-	parse_query(DB, "SELECT * FROM users");
-	//printf(brk);
-	parse_query(DB, "SELECT * FROM users WHERE id = 300");
-	//printf(brk);
-	parse_query(DB, "SELECT * FROM users WHERE id <> 300");
-	//printf(brk);
-	parse_query(DB, "SELECT * FROM users WHERE id <= 300");
-	//printf(brk);
-	parse_query(DB, "SELECT * FROM users WHERE id <= 300 AND name = 'Miel'");
-	//printf(brk);
-	parse_query(DB, "DELETE users WHERE id < 300");
-	//printf(brk);
-	parse_query(DB, "CREATE TABLE users2 ( INT id , STRING name )");
-	parse_query(DB, "SELECT * FROM users WHERE id = 300");
-	//printf(brk);
-	parse_query(DB, "SELECT * FROM users WHERE id <> 300");
-	//printf(brk);
-	parse_query(DB, "SELECT * FROM users WHERE id <= 300");
-	//printf(brk);
-	parse_query(DB, "INSERT users2 ( id = 1001 , name = 'shakED1' )");
-	parse_query(DB, "INSERT users2 ( id = 2001 , name = 'Miel1' )");
-	parse_query(DB, "INSERT users2 ( id = 3001 , name = 'LiyaHallel1' )");
-	parse_query(DB, "SELECT * FROM users WHERE id <= 300 AND name = 'Miel'");
-	//printf(brk);
-	parse_query(DB, "SELECT * FROM users2");
-	//printf(brk);
-	parse_query(DB, "DROP TABLE users2");
-	parse_query(DB, "SELECT * FROM users WHERE id <= 300 AND name = 'Miel'");
-	//printf(brk);
-	parse_query(DB, "SELECT * FROM users2");
-	//printf(brk);
-	*/
+	
   	db_dtor(DB);
 	done(0);
 }
 
-/*
+
 // This a non deteministec program. It aims to prove that there are no memory leaks.
 // There is a assert in done() which verifies that the ptr chosen (non deterministicaly) was freed.  
 void no_mem_leaks() {
-	database_t* DB = db_ctor();
 
-	char buffer[1000];
-	parse_query(DB, "CREATE TABLE users ( INT id , STRING name )");
+	
+	database_t* DB = db_ctor();
+       
+        dbapi_create_table(DB,TABLE_NAME,INT,IDS_COLUMN,STRING,NAMES_COLUMN,INT,NULL);
+        
 	int id = nd();
 	while (nd()) {
 		int command = nd();
@@ -81,37 +46,37 @@ void no_mem_leaks() {
 		switch (command)
 		{
 		case 0: {
-			char query[] = "CREATE TABLE users ( INT id , STRING name )";
-			parse_query(DB, query); // Seahorn crashes if the query is sent directly to parse_query(). 
+			//char query[] = "CREATE TABLE users ( INT id , STRING name )";
+			dbapi_create_table(DB,TABLE_NAME,INT,IDS_COLUMN,STRING,NAMES_COLUMN,INT,NULL);
 			break; }
 
 		case 1: {
-			char query[] = "DROP TABLE users";
-			parse_query(DB, query); // Seahorn crashes if the query is sent directly to parse_query(). 
+			//char query[] = "DROP TABLE users";
+			dbapi_drop_table(DB, TABLE_NAME);		 
 			break; }
 		case 2: {
-			char query[] = "INSERT users ( id = 100 , name = 'AAa' )";
-			parse_query(DB, query); // Seahorn crashes if the query is sent directly to parse_query(). 
+			//char query[] = "INSERT users ( id = 100 , name = 'AAa' )";
+			dbapi_insert(DB, TABLE_NAME,IDS_COLUMN,100,NULL,NAMES_COLUMN,INT,"AAa",/*here foward are junk values*/NULL, 0, NULL);
 			break; }
 		case 3: {
-			char query[] = "INSERT users ( id = 200 , name = 'BBb' )";
-			parse_query(DB, query); // Seahorn crashes if the query is sent directly to parse_query(). 
+			//char query[] = "INSERT users ( id = 200 , name = 'BBb' )";
+			dbapi_insert(DB, TABLE_NAME,IDS_COLUMN,200,NULL,NAMES_COLUMN,INT,"BBb",/*here foward are junk values*/NULL, 0, NULL); 
 			break; }
 		case 4: {
-			char query[] = "INSERT users ( id = 300 , name = 'CCc' )";
-			parse_query(DB, query); // Seahorn crashes if the query is sent directly to parse_query(). 
+			//char query[] = "INSERT users ( id = 300 , name = 'CCc' )";
+			dbapi_insert(DB, TABLE_NAME,IDS_COLUMN,300,NULL,NAMES_COLUMN,INT,"ccC",/*here foward are junk values*/NULL, 0, NULL); 
 			break; }
 		case 5: {
-			char query[] = "DELETE users WHERE id < 290";
-			parse_query(DB, query); // Seahorn crashes if the query is sent directly to parse_query(). 
+			//char query[] = "DELETE users WHERE id < 290";
+			dbapi_delete(DB, TABLE_NAME, IDS_COLUMN, SMALLER, 290, NULL, NULL, 0, 0, NULL, NULL, 0, 0, NULL); 
 			break; }
 		case 6: {
-			char query[] = "DELETE users WHERE id = 300";
-			parse_query(DB, query); // Seahorn crashes if the query is sent directly to parse_query(). 
+			//char query[] = "DELETE users WHERE id = 300";
+			dbapi_delete(DB, TABLE_NAME, IDS_COLUMN, EQUAL, 300, NULL, NULL, 0, 0, NULL, NULL, 0, 0, NULL); 
 			break; }
 		case 7: {
-			char query[] = "SELECT * FROM users WHERE id <> 300";
-			parse_query(DB, query); // Seahorn crashes if the query is sent directly to parse_query(). 
+			//char query[] = "SELECT * FROM users WHERE id <> 300";
+			dbapi_select(DB, TABLE_NAME, IDS_COLUMN, NOT_EQUAL, 300, NULL, NULL, 0, 0, NULL, NULL, 0, 0, NULL); 
 			break; }
 		default:
 			break;
@@ -120,7 +85,7 @@ void no_mem_leaks() {
 	db_dtor(DB);
 	done(1);
 }
-
+/*
 void insert_and_select() {
 	database_t* DB = db_ctor();
 
@@ -152,6 +117,6 @@ void insert_and_select() {
 
 int main() {
 	deterministic_test();
-	//no_mem_leak(DB);
+	no_mem_leaks();
 	//insert_and_select();
 }
