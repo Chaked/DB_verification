@@ -119,7 +119,8 @@ return_code_t dbapi_select(database_t* DB, char* table_name, char* col_n1, condi
 
 void print_results(list_t* results) {
 	if (!results) {
-		printf("No results\n");
+//		printf("No results\n");
+		return;
 	}
 	list_t* current_row = results;
 	while (current_row != NULL)
@@ -132,16 +133,16 @@ void print_results(list_t* results) {
 			switch (column->type)
 			{
 			case INT:
-				printf("%d", column->value.i);
+//				printf("%d", column->value.i);
 				break;
 			case STRING:
-				printf("%s", column->value.str);
+//				printf("%s", column->value.str);
 				break;
 			default:
-				printf("Can't print this column");
+//				printf("Can't print this column");
 				break;
 			}
-			printf("%s", current_column->next ? "," : "\n");
+//			printf("%s", current_column->next ? "," : "\n");
 			current_column = current_column->next;
 		}
 		current_row = current_row->next;

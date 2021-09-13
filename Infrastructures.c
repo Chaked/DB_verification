@@ -14,7 +14,7 @@ void* db_malloc(size_t size) {
 	} else
 		malloc_count++;
 
-	//assume(result != NULL);
+	assume(result != NULL);
 	if (!have_we_stored_a_ptr && nd()) {
 		have_we_stored_a_ptr = TRUE;
 		stored_ptr = result;

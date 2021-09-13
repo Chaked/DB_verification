@@ -1,10 +1,13 @@
 
 #include "DB_API.h"
 
+extern char* nd_str(void);
+extern condition_type_t nd_cond(void);
 
- char* TABLE_NAME = "user";
-        char* IDS_COLUMN = "id";
-        char* NAMES_COLUMN = "name";
+
+char* TABLE_NAME = "user";
+char* IDS_COLUMN = "id";
+char* NAMES_COLUMN = "name";
 
 // This test is a regular test case with determined commaned.
 // It is used for sanity checks. Once I will make this work, I will execute the other tests.
@@ -29,54 +32,45 @@ void deterministic_test() {
 	done(0);
 }
 
-
 // This a non deteministec program. It aims to prove that there are no memory leaks.
 // There is a assert in done() which verifies that the ptr chosen (non deterministicaly) was freed.  
-void no_mem_leaks() {
-
-	
+void no_mem_leaks() {	
 	database_t* DB = db_ctor();
-       
-        dbapi_create_table(DB,TABLE_NAME,INT,IDS_COLUMN,STRING,NAMES_COLUMN,INT,NULL);
-        
-	int id = nd();
+    dbapi_create_table(DB,TABLE_NAME,INT,IDS_COLUMN,STRING,NAMES_COLUMN,INT,NULL);
 	while (nd()) {
 		int command = nd();
-		assume(command >= 0 && command < 8);
+		assume(command >= 0 && command < 5);
 		switch (command)
 		{
 		case 0: {
 			//char query[] = "CREATE TABLE users ( INT id , STRING name )";
-			dbapi_create_table(DB,TABLE_NAME,INT,IDS_COLUMN,STRING,NAMES_COLUMN,INT,NULL);
+			dbapi_create_table(DB,TABLE_NAME,INT,IDS_COLUMN,STRING,NAMES_COLUMN,0,NULL);
 			break; }
-
 		case 1: {
 			//char query[] = "DROP TABLE users";
 			dbapi_drop_table(DB, TABLE_NAME);		 
 			break; }
 		case 2: {
-			//char query[] = "INSERT users ( id = 100 , name = 'AAa' )";
-			dbapi_insert(DB, TABLE_NAME,IDS_COLUMN,100,NULL,NAMES_COLUMN,INT,"AAa",/*here foward are junk values*/NULL, 0, NULL);
-			break; }
+			//char query[] = "INSERT users ( id = nd , name = nd )";
+			int id = nd();
+			char* name = nd_str();
+			dbapi_insert(DB, TABLE_NAME,IDS_COLUMN,id,NULL,NAMES_COLUMN,0,name,NULL, 0, NULL);
+			break; }	
 		case 3: {
-			//char query[] = "INSERT users ( id = 200 , name = 'BBb' )";
-			dbapi_insert(DB, TABLE_NAME,IDS_COLUMN,200,NULL,NAMES_COLUMN,INT,"BBb",/*here foward are junk values*/NULL, 0, NULL); 
+			//char query[] = "DELETE users WHERE id < 290";
+			int id = nd();
+			char* name = nd_str();
+			condition_type_t cond1 = nd_cond();
+			condition_type_t cond2 = nd_cond();
+			dbapi_delete(DB, TABLE_NAME, IDS_COLUMN, cond1, id, NULL, NAMES_COLUMN, cond2, 0, name, NULL, 0, 0, NULL); 
 			break; }
 		case 4: {
-			//char query[] = "INSERT users ( id = 300 , name = 'CCc' )";
-			dbapi_insert(DB, TABLE_NAME,IDS_COLUMN,300,NULL,NAMES_COLUMN,INT,"ccC",/*here foward are junk values*/NULL, 0, NULL); 
-			break; }
-		case 5: {
-			//char query[] = "DELETE users WHERE id < 290";
-			dbapi_delete(DB, TABLE_NAME, IDS_COLUMN, SMALLER, 290, NULL, NULL, 0, 0, NULL, NULL, 0, 0, NULL); 
-			break; }
-		case 6: {
-			//char query[] = "DELETE users WHERE id = 300";
-			dbapi_delete(DB, TABLE_NAME, IDS_COLUMN, EQUAL, 300, NULL, NULL, 0, 0, NULL, NULL, 0, 0, NULL); 
-			break; }
-		case 7: {
 			//char query[] = "SELECT * FROM users WHERE id <> 300";
-			dbapi_select(DB, TABLE_NAME, IDS_COLUMN, NOT_EQUAL, 300, NULL, NULL, 0, 0, NULL, NULL, 0, 0, NULL); 
+			int id = nd();
+			char* name = nd_str();
+			condition_type_t cond1 = nd_cond();
+			condition_type_t cond2 = nd_cond();
+			dbapi_select(DB, TABLE_NAME, IDS_COLUMN, cond1, id, NULL, NAMES_COLUMN, cond2, 0, name, NULL, 0, 0, NULL);
 			break; }
 		default:
 			break;
@@ -85,6 +79,7 @@ void no_mem_leaks() {
 	db_dtor(DB);
 	done(1);
 }
+
 /*
 void insert_and_select() {
 	database_t* DB = db_ctor();
