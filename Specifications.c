@@ -80,38 +80,82 @@ void no_mem_leaks() {
 	done(1);
 }
 
-/*
+int get_matching_value_i(char * column_name, char* c_names[] ,int c_values_i[]) {
+	for (int i = 0; i < 3; i++) 
+		if (db_strcmp(column_name, c_names[i])) 
+			return c_values_i[i];
+	sassert(FALSE);
+	return -1;
+}
+
+char* get_matching_value_str(char* column_name, char* c_names[], char* c_values_str[]) {
+	for (int i = 0; i < 3; i++)
+		if (db_strcmp(column_name, c_names[i]))
+			return c_values_str[i];
+	sassert(FALSE);
+	return NULL;
+}
+
+
 void insert_and_select() {
+
 	database_t* DB = db_ctor();
 
-	char create_query[] = "CREATE TABLE users ( INT id , STRING name )";
-	parse_query(DB, create_query); // Seahorn crashes if the query is sent directly to parse_query(). 
+	// Declare the table properties non deterministicaly 
+	char* table_name = nd_str();
+	column_type_t c_types[3];
+	char* c_names[3];
+	for (int i = 0; i < 3; i++)
+		c_types[i] = nd_column_t();
+	for (int i = 0; i < 3; i++)
+		c_names[i] = nd_str();
 
-	char* id = str_nd();
-	assume(is_number(id));
-	char* prefix = "INSERT users ( id = ";
-	char* suffix = " , name = 'SlimShady' )";
-	char* half_query = db_concat(prefix, id);
-	char* query = db_concat(half_query, suffix);
-	db_free(half_query);
-	parse_query(DB,query);
-	char* condition = db_concat("WHERE id = ",id);
-	char* ptr = db_strtok(condition);
-	list_t* conditions = parse_conditions();
+	dbapi_create_table(DB, table_name, c_types[0], c_names[0], c_types[1], c_names[1], c_types[2], c_names[2]);
+
+	// Asserts the table is empty
+	list_t* results = DB_select(DB, table_name, NULL);
+	sassert(results == NULL);
 	
-	list_t* results = DB_select(DB, "users", conditions);
-	sassert(results->next == NULL);
-	sassert((((column_value_t*)(((row_t*)(results->value))->values->next->value))->value.i) == db_atoi(id));
+	// Add a row with non determinstic values
+	int c_values_i[3];
+	char* c_values_str[3];
+	for (int i = 0; i < 3; i++) {
+		c_values_i[i] = nd();
+		c_values_str[i] = nd_str();
+		if (c_types[i] == INT)
+			assume(c_values_i[i] == 0);
+		else
+			assume(c_values_str[i] == NULL);
+	}
+	dbapi_insert(DB, table_name, c_names[0], c_values_i[0],	c_values_str[0], c_names[1], c_values_i[1], c_values_str[1], c_names[2], c_values_i[2], c_values_str[2]);
 
-	db_free(query);
-	db_free(condition);
-	free_list(conditions, CONDITION);
-	db_dtor(DB);
-}*/
-
+	// Check we can retrive the non determinstic row
+	results = DB_select(DB, table_name, NULL);
+	sassert(results && results->next == NULL);
+	
+	//sassert(current_row->value != NULL);
+	list_t* current_column = ((row_t*)results->value)->values;
+	while (current_column != NULL)
+	{
+		column_value_t* column = (column_value_t*)current_column->value;
+		switch (column->type)
+		{
+		case INT:
+			sassert(column->value.i == get_matching_value_i(column->name, c_names, c_values_i));
+			break;
+		case STRING:
+			sassert(column->value.str == get_matching_value_str(column->name, c_names, c_values_str));
+			break;
+		default:
+			sassert(FALSE);
+			break;
+		}
+	}
+	free_list(results, ROW);
+}
 
 int main() {
 	deterministic_test();
 	no_mem_leaks();
-	//insert_and_select();
+	insert_and_select();
 }
