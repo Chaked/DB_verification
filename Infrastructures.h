@@ -88,5 +88,5 @@ extern int nd(void);
 extern char* nd_str(void);
 extern condition_type_t nd_cond(void);
 extern column_type_t nd_column_t(void);
-
+extern void* nd_ptr(void);
 

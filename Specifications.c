@@ -1,9 +1,6 @@
 
 #include "DB_API.h"
 
-extern char* nd_str(void);
-extern condition_type_t nd_cond(void);
-
 
 char* TABLE_NAME = "user";
 char* IDS_COLUMN = "id";
@@ -34,7 +31,7 @@ void deterministic_test() {
 
 // This a non deteministec program. It aims to prove that there are no memory leaks.
 // There is a assert in done() which verifies that the ptr chosen (non deterministicaly) was freed.  
-void no_mem_leaks() {	
+void memory_safety() {	
 	database_t* DB = db_ctor();
     dbapi_create_table(DB,TABLE_NAME,INT,IDS_COLUMN,STRING,NAMES_COLUMN,INT,NULL);
 	while (nd()) {
@@ -152,10 +149,12 @@ void insert_and_select() {
 		}
 	}
 	free_list(results, ROW);
+	db_dtor(DB);
+	done(1);
 }
 
 int main() {
 	deterministic_test();
-	no_mem_leaks();
 	insert_and_select();
+	memory_safety();
 }
