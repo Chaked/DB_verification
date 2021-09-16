@@ -1,4 +1,4 @@
-//#include "seahorn/seahorn.h"
+#include "seahorn/seahorn.h"
 
 #include <stdio.h>
 #include <stdlib.h>

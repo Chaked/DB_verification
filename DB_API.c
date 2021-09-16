@@ -22,7 +22,7 @@ condition_t* condition_ctor(char col_n, condition_type_t col_ct, int col_v_i, ch
 	condition_t* condition = db_malloc(sizeof(condition_t));
 	condition->column_name = col_n;
 	condition->ctype = col_ct;
-	if (col_v_str == NULL) {
+	if (col_v_str == '\0') {
 		condition->value.i = col_v_i;
 		condition->is_value_int = TRUE;
 	}
@@ -36,7 +36,7 @@ condition_t* condition_ctor(char col_n, condition_type_t col_ct, int col_v_i, ch
 
 return_code_t dbapi_create_table(database_t* DB, char table_name, column_type_t col_t1, char col_n1, column_type_t col_t2, char col_n2, column_type_t col_t3, char col_n3) {
 
-	if (col_n1 == NULL)
+	if (col_n1 == '\0')
 		return FAILURE;
 
 	list_t* columns_declarations = NULL;
@@ -57,7 +57,7 @@ return_code_t dbapi_drop_table(database_t* DB, char table_name) {
 }
 
 return_code_t dbapi_insert(database_t* DB, char table_name, char col_n1, int col_v_i1, char col_v_str1,  char col_n2, int col_v_i2, char col_v_str2,  char col_n3, int col_v_i3, char col_v_str3) {
-	if (col_n1 == NULL)
+	if (col_n1 == '\0')
 		return FAILURE;
 	list_t* column_values = NULL;
 	if (col_n1) {
