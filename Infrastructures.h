@@ -1,4 +1,4 @@
-#include "seahorn/seahorn.h"
+//#include "seahorn/seahorn.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,19 +22,19 @@ typedef struct _list {
 
 typedef union _value {
 	int i;
-	char* str;
+	char str;
 } value_t;
 
 
 //An object defining a clomun
 typedef struct _column_declaration {
-	char* name;
+	char name;
 	column_type_t type;
 } column_declaration_t;
 
 //An object holding values that are assigned to columns
 typedef struct _column_value {
-	char* name;
+	char name;
 	column_type_t type;
 	value_t value;
 } column_value_t;
@@ -42,8 +42,8 @@ typedef struct _column_value {
 typedef struct _condition {
 	condition_type_t ctype;
 	boolean_t is_value_int;
-	char* column_name;
-	value_t value;//This is char* or int
+	char column_name;
+	value_t value;//This is char or int
 } condition_t;
 
 typedef struct _response {
@@ -54,7 +54,7 @@ typedef struct _response {
 } response_t;
 
 typedef struct _table {
-	char* name;
+	char name;
 	//List of column_declaration_t*
 	list_t* columns;
 	//List of row_t*
@@ -75,17 +75,10 @@ typedef struct _database {
 void* db_malloc(size_t size);
 void db_free(void* pointer);
 void done(int test_id);
-char* copy_string(char* src);
-char* db_strcpy(char* des, int dest_size, char* src);
-char* db_strtok(char* str);
-int db_strlen(char* str);
-int db_strcmp(char* str1, char * str2);
-char * db_concat(char* str1, char* str2);
-
 
 //SEAHORN SECTION
 extern int nd(void);
-extern char* nd_str(void);
+extern char nd_str(void);
 extern condition_type_t nd_cond(void);
 extern column_type_t nd_column_t(void);
 extern void* nd_ptr(void);

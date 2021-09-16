@@ -1,11 +1,11 @@
 #include "DB.h"
 
-list_t* get_table_object_from_DB(database_t* DB, char* table_name) {
+list_t* get_table_object_from_DB(database_t* DB, char table_name) {
 	list_t* current = DB->tables;
 	while (current != NULL)
 	{
 		table_t* current_table = current->value;
-		if (!db_strcmp(table_name, current_table->name))
+		if (table_name == current_table->name)
 			return current;
 		current = current->next;
 	}
@@ -32,16 +32,14 @@ row_t* column_list_to_row(list_t* column_values, table_t* table) {
 //Deep copy of a column value
 column_value_t* copy_column_value(column_value_t* column_value) {
 	column_value_t* copy = db_malloc(sizeof(column_value_t));
-	copy->name = db_malloc(db_strlen(column_value->name) + 1);
-	db_strcpy(copy->name, db_strlen(column_value->name) + 1,column_value->name);
+	copy->name = column_value->name;
 	copy->type = column_value->type;
 	switch (copy->type) {
 	case INT:
 		copy->value.i = column_value->value.i;
 		break;
 	case STRING:
-		copy->value.str = db_malloc(db_strlen(column_value->value.str) + 1);
-		db_strcpy(copy->value.str, db_strlen(column_value->value.str) + 1,column_value->value.str);
+		copy->value.str = column_value->value.str;
 		break;
 	default:
 		//sassert(FALSE);
@@ -63,7 +61,7 @@ boolean_t check_row_validity(table_t* table, list_t* column_values) {
 		column_value_t* current = column_values->value;
 		column_value_t* current_index = column_index->value;
 
-		if (db_strcmp(current->name, current_index->name))
+		if (current->name != current_index->name)
 			return FALSE;
 		if (current->type != current_index->type)
 			return FALSE;
@@ -104,7 +102,7 @@ row_t* row_satisfy_condition(row_t* row, list_t* conditions, table_t* table) {
 			condition_t* condition = current_condition->value;
 
 
-			if (db_strcmp(condition->column_name, column->name)) {
+			if (condition->column_name != column->name) {
 				current_condition = current_condition->next;
 				continue;
 			}
@@ -129,13 +127,13 @@ row_t* row_satisfy_condition(row_t* row, list_t* conditions, table_t* table) {
 	return result ? row : NULL;
 }
 
-boolean_t string_condition(char* l_operand, char* r_operand, condition_t* condition) {
+boolean_t string_condition(char l_operand, char r_operand, condition_t* condition) {
 	switch (condition->ctype)
 	{
 	case EQUAL:
-		return !db_strcmp(l_operand, r_operand);
+		return l_operand == r_operand;
 	case NOT_EQUAL:
-		return db_strcmp(l_operand, r_operand);
+		return l_operand != r_operand;
 	default:
 		//printf_s("Illegal string condition");
 		break;
@@ -181,14 +179,17 @@ row_t* copy_row(row_t* row_to_copy) {
 	row_t* new_row = db_malloc(sizeof(row_t));
 	new_row->values = NULL;
 	list_t* current_column = row_to_copy->values;
+	//Populate the row's columns
 	while (current_column != NULL)
 	{
-		//Create the row
 		column_value_t* new_column = db_malloc(sizeof(column_value_t));
-		memcpy(new_column, current_column->value, sizeof(column_value_t));
-		new_column->name = copy_string(new_column->name);
-		if (new_column->type == STRING) 
-			new_column->value.str = copy_string(new_column->value.str);
+		new_column->name = ((column_value_t*)current_column->value)->name;
+		new_column->type = ((column_value_t*)current_column->value)->type;
+		if (new_column->type == STRING)
+			new_column->value.str = ((column_value_t*)current_column->value)->value.str;
+		if (new_column->type == INT)
+			new_column->value.i = ((column_value_t*)current_column->value)->value.i;
+		
 		new_row->values = add_to_the_end(new_row->values, new_column);
 		current_column = current_column->next;
 	}
@@ -209,13 +210,13 @@ void db_dtor(database_t* DB)
 	db_free(DB);
 }
 
-return_code_t DB_create(database_t* DB,  char* table_name, list_t* columns_declaration)
+return_code_t DB_create(database_t* DB,  char table_name, list_t* columns_declaration)
 {
 	table_t* table = db_malloc(sizeof(table_t));
 	if (table == NULL)
 		return FAILURE;
 	table->columns = columns_declaration;
-	table->name = copy_string(table_name);
+	table->name = table_name;
 	table->rows = NULL;
 
 	DB->tables = add_to_list(DB->tables, table);
@@ -223,7 +224,7 @@ return_code_t DB_create(database_t* DB,  char* table_name, list_t* columns_decla
 	return SUCCESS;
 }
 
-return_code_t DB_drop(database_t* DB,  char* table_name)
+return_code_t DB_drop(database_t* DB,  char table_name)
 {
 	list_t* table_node = get_table_object_from_DB(DB, table_name);
 	if (table_node == NULL)
@@ -235,7 +236,7 @@ return_code_t DB_drop(database_t* DB,  char* table_name)
 	return SUCCESS;
 }
 
-return_code_t DB_insert(database_t* DB,  char* table_name, list_t* column_values)
+return_code_t DB_insert(database_t* DB,  char table_name, list_t* column_values)
 {
 	list_t* table_node = get_table_object_from_DB(DB, table_name);
 	if (!table_node) {
@@ -252,7 +253,7 @@ return_code_t DB_insert(database_t* DB,  char* table_name, list_t* column_values
 }
 
 // If the condition is empty, all rows will be deleted.
-return_code_t DB_delete(database_t* DB,  char* table_name, list_t* conditions)
+return_code_t DB_delete(database_t* DB,  char table_name, list_t* conditions)
 {
 	int deleted = 0;
 	list_t* table_node = get_table_object_from_DB(DB, table_name);
@@ -269,7 +270,7 @@ return_code_t DB_delete(database_t* DB,  char* table_name, list_t* conditions)
 }
 
 
-list_t* DB_select(database_t* DB,  char* from, list_t* conditions)
+list_t* DB_select(database_t* DB,  char from, list_t* conditions)
 {
 	list_t* table_node = get_table_object_from_DB(DB, from);
 	if (!table_node) {
