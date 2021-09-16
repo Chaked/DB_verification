@@ -33,8 +33,10 @@ void deterministic_test() {
 // There is a assert in done() which verifies that the ptr chosen (non deterministicaly) was freed.  
 void memory_safety() {	
 	database_t* DB = db_ctor();
-    dbapi_create_table(DB,TABLE_NAME,INT,IDS_COLUMN,STRING,NAMES_COLUMN,INT, '\0');
-	while (nd()) {
+   	dbapi_create_table(DB,TABLE_NAME,INT,IDS_COLUMN,STRING,NAMES_COLUMN,INT, '\0');
+	int iterations = nd();
+	assume(iterations > 1);
+    	for (int i = 0; i < iterations; i++) {
 		int command = nd();
 		assume(command >= 0 && command < 5);
 		switch (command)
@@ -90,7 +92,7 @@ char get_matching_value_str(char column_name, char c_names[], char c_values_str[
 		if (column_name == c_names[i])
 			return c_values_str[i];
 	sassert(FALSE);
-	return NULL;
+	return '\0';
 }
 
 
@@ -107,8 +109,9 @@ void insert_and_select() {
 	for (int i = 0; i < 3; i++)
 		c_names[i] = nd_str();
 
-	dbapi_create_table(DB, table_name, c_types[0], c_names[0], c_types[1], c_names[1], c_types[2], c_names[2]);
-
+	
+	return_code_t rtc = dbapi_create_table(DB, table_name, c_types[0], c_names[0], c_types[1], c_names[1], c_types[2], c_names[2]);
+	if(rtc == FAILURE) return;
 	// Asserts the table is empty
 	list_t* results = DB_select(DB, table_name, NULL);
 	sassert(results == NULL);
@@ -124,8 +127,9 @@ void insert_and_select() {
 		else
 			assume(c_values_str[i] == '\0');
 	}
-	dbapi_insert(DB, table_name, c_names[0], c_values_i[0],	c_values_str[0], c_names[1], c_values_i[1], c_values_str[1], c_names[2], c_values_i[2], c_values_str[2]);
-
+	
+ 	dbapi_insert(DB, table_name, c_names[0], c_values_i[0],	c_values_str[0], c_names[1], c_values_i[1], c_values_str[1], c_names[2], c_values_i[2], c_values_str[2]);
+	
 	// Check we can retrive the non determinstic row
 	results = DB_select(DB, table_name, NULL);
 	sassert(results && results->next == NULL);
