@@ -87,7 +87,7 @@ int get_matching_value_i(char * column_name, char* c_names[] ,int c_values_i[]) 
 
 char* get_matching_value_str(char* column_name, char* c_names[], char* c_values_str[]) {
 	for (int i = 0; i < 3; i++)
-		if (db_strcmp(column_name, c_names[i]))
+		if (!db_strcmp(column_name, c_names[i]))
 			return c_values_str[i];
 	sassert(FALSE);
 	return NULL;
